@@ -20,6 +20,10 @@ from tuxlava.exceptions import InvalidArgument
 from tuxlava.utils import compression, notnone, slugify
 
 
+def boots_os(tests) -> bool:
+    return all(t.needs_os for t in tests)
+
+
 class QemuDevice(Device):
     flag_cache_rootfs = True
     real_device = False
@@ -93,8 +97,23 @@ class QemuDevice(Device):
         for test in tests:
             test.validate(device=self, parameters=parameters, **kwargs)
 
+        uboot_tests = [t.name for t in tests if not t.needs_os]
+        if uboot_tests:
+            if not bios:
+                raise InvalidArgument(
+                    f"test '{uboot_tests[0]}' needs --uboot or --bios"
+                )
+            if len(tests) > 1:
+                raise InvalidArgument("a u-boot test must run alone")
+            if kernel or rootfs or modules or overlays:
+                raise InvalidArgument(
+                    "u-boot tests do not boot a kernel, a rootfs, modules or overlays"
+                )
+
     def default(self, options) -> None:
         options.bios = notnone(options.bios, self.bios)
+        if not boots_os(options.tests):
+            return
         options.dtb = notnone(options.dtb, self.dtb)
         options.kernel = notnone(options.kernel, self.kernel)
         options.rootfs = notnone(options.rootfs, self.rootfs)
@@ -117,6 +136,7 @@ class QemuDevice(Device):
         kwargs["enable_trustzone"] = kwargs["enable_trustzone"]
         kwargs["no_kvm"] = not kwargs["enable_kvm"]
         kwargs["no_network"] = not kwargs["enable_network"]
+        kwargs["boot_os"] = boots_os(kwargs["tests"])
 
         # Options that can be updated
         if self.extra_boot_args:

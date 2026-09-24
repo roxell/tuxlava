@@ -40,6 +40,7 @@ class Test:
     name: str = ""
     timeout: int = 0
     need_test_definition: bool = False
+    needs_os: bool = True
     needs_network: bool = False
 
     def __init__(self, timeout):
@@ -102,6 +103,7 @@ import tuxlava.tests.rttests  # noqa: E402,F401
 import tuxlava.tests.systemdanalyze  # noqa: E402,F401
 import tuxlava.tests.tcpreplay  # noqa: E402,F401
 import tuxlava.tests.tfatests  # noqa: E402,F401
+import tuxlava.tests.uboot  # noqa: E402,F401
 import tuxlava.tests.v4l2  # noqa: E402,F401
 import tuxlava.tests.vdso  # noqa: E402,F401
 import tuxlava.tests.xfstests  # noqa: E402,F401

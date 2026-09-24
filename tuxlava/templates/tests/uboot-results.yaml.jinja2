@@ -1,0 +1,5 @@
+      pattern: "Result: (?P<result>PASS|SKIP|FAIL): (?P<test_case_id>[^\\r\\n]+)[\\r\\n]"
+      fixupdict:
+        PASS: pass
+        SKIP: skip
+        FAIL: fail

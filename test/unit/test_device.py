@@ -2785,6 +2785,19 @@ def artefacts(tmp_path):
         (
             [
                 "--device",
+                "qemu-arm64",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+                "--tests",
+                "uboot-ut",
+                "--parameters",
+                "UT_SUITES=lib mem",
+            ],
+            "qemu-arm64-uboot-ut-suites.yaml",
+        ),
+        (
+            [
+                "--device",
                 "nfs-altra-max-ac02",
                 "--kernel",
                 "https://example.com/Image.gz",
@@ -3982,6 +3995,53 @@ def test_definition(monkeypatch, mocker, capsys, tmpdir, artefacts, args, filena
                 "https://example.com/u-boot.bin",
             ],
             "argument --bios/--uboot is only valid for qemu-riscv32, qemu-riscv64 and qemu-arm64 device",
+        ),
+        (
+            [
+                "--device",
+                "qemu-arm64",
+                "--tests",
+                "uboot-ut",
+            ],
+            "test 'uboot-ut' needs --uboot or --bios",
+        ),
+        (
+            [
+                "--device",
+                "qemu-arm64",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+                "--tests",
+                "uboot-ut",
+                "ltp-smoke",
+            ],
+            "a u-boot test must run alone",
+        ),
+        (
+            [
+                "--device",
+                "qemu-arm64",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+                "--kernel",
+                "https://example.com/Image",
+                "--tests",
+                "uboot-ut",
+            ],
+            "u-boot tests do not boot a kernel, a rootfs, modules or overlays",
+        ),
+        (
+            [
+                "--device",
+                "qemu-arm64",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+                "--tests",
+                "uboot-ut",
+                "--parameters",
+                "UT_SUITES=lib; reset",
+            ],
+            "Invalid value for --parameters UT_SUITES, expected suite names",
         ),
         (
             [

@@ -1,0 +1,22 @@
+- test:
+    timeout:
+      minutes: {{ timeout }}
+    interactive:
+{% include "uboot-prompt.yaml.jinja2" %}
+
+    - name: {{ name }}-start
+      prompts: ["=> "]
+      script:
+      - command: "echo ut-begin{% for suite in suites %}; if ut {{ suite }}; then echo Result: PASS: {{ suite }}; else echo Result: FAIL: {{ suite }}; fi{% endfor %}"
+        successes:
+        - message: "echo ut-begin"
+        wait_for_prompt: false
+- test:
+    timeout:
+      minutes: {{ timeout }}
+    monitors:
+    - name: {{ name }}
+      start: "ut-begin\\s"
+      end: "=> "
+{% include "uboot-results.yaml.jinja2" %}
+

@@ -42,7 +42,7 @@ actions:
       minutes: {{ deploy_timeout }}
     os: oe
     images:
-{% if not enable_cca %}
+{% if boot_os and not enable_cca %}
       kernel:
         image_arg: '-kernel {kernel} -append "console={{ console }},115200 rootwait {% if not is_cpio %}root={{ rootfs_dev }}{% if rootfs_partition is not none %}{{ rootfs_partition + 1 }}{% endif %} {% endif %}debug verbose console_msg_format=syslog systemd.log_level=warning{% if tux_boot_args %} {{ tux_boot_args }}{% endif %} earlycon"{% if shared %} -virtfs local,path={{ shared.0 }},mount_tag=tuxlava,security_model=mapped{% endif %}'
         url: "{{ kernel }}"
@@ -76,6 +76,7 @@ actions:
         url: "{{ dtb }}"
 {% if secret_headers %}{{ headers_yaml(secret_headers, "dtb", 8) }}{% endif %}
 {% endif %}
+{% if boot_os %}
       rootfs:
 {% if is_cpio %}
         image_arg: "-initrd {rootfs}"
@@ -124,6 +125,7 @@ actions:
         overlays:
           lava: true
 {% endif %}
+{% endif %}
 - boot:
     method: qemu
 {% if qemu_image %}
@@ -132,7 +134,7 @@ actions:
 {% endif %}
     timeout:
       minutes: {{ boot_timeout }}
-{% if not enable_trustzone or "tfa-tests" not in tests|map(attribute="name")|join(", ") %}
+{% if boot_os and (not enable_trustzone or "tfa-tests" not in tests|map(attribute="name")|join(", ")) %}
     auto_login:
       login_prompt: 'login:'
       username: root

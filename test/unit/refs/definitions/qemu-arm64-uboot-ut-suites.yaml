@@ -1,0 +1,68 @@
+device_type: "qemu"
+
+job_name: "tuxlava@qemu-arm64: uboot-ut"
+priority: low
+visibility: "public"
+
+context:
+    arch: "arm64"
+    machine: "virt,virtualization=on,gic-version=3,mte=on"
+    cpu: "max,pauth-impdef=on"
+    memory: "4G"
+    extra_options: ["-no-reboot", "-smp 2"]
+    no_kvm: true
+    no_network: true
+timeouts:
+  job:
+    minutes: 40
+  action:
+   minutes: 5
+  actions:
+    power-off:
+      seconds: 30
+
+actions:
+- deploy:
+    to: tmpfs
+    timeout:
+      minutes: 15
+    os: oe
+    images:
+      bios:
+        image_arg: "-bios {bios}"
+        url: "https://example.com/u-boot.bin"
+- boot:
+    method: qemu
+    timeout:
+      minutes: 15
+- test:
+    timeout:
+      minutes: 10
+    interactive:
+    - name: uboot-prompt
+      prompts: ["Hit any key to stop autoboot", "=> "]
+      script:
+      - command: null
+    - name: uboot-stop-autoboot
+      prompts: ["=> "]
+      script:
+      - command: ""
+    - name: uboot-ut-start
+      prompts: ["=> "]
+      script:
+      - command: "echo ut-begin; if ut lib; then echo Result: PASS: lib; else echo Result: FAIL: lib; fi; if ut mem; then echo Result: PASS: mem; else echo Result: FAIL: mem; fi"
+        successes:
+        - message: "echo ut-begin"
+        wait_for_prompt: false
+- test:
+    timeout:
+      minutes: 10
+    monitors:
+    - name: uboot-ut
+      start: "ut-begin\\s"
+      end: "=> "
+      pattern: "Result: (?P<result>PASS|SKIP|FAIL): (?P<test_case_id>[^\\r\\n]+)[\\r\\n]"
+      fixupdict:
+        PASS: pass
+        SKIP: skip
+        FAIL: fail
