@@ -14,6 +14,11 @@ def test_filter_options():
     assert filter_options(Namespace(hello="world", debug=True)) == {"hello": "world"}
 
 
+def test_uboot_is_bios():
+    options = setup_parser().parse_args(["--uboot", "https://example.com/u-boot.bin"])
+    assert options.bios == "https://example.com/u-boot.bin"
+
+
 def test_timeouts_parser():
     assert setup_parser().parse_args(["--timeouts", "boot=1"]).timeouts == {"boot": 1}
     assert setup_parser().parse_args(

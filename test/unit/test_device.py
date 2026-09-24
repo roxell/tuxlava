@@ -3975,6 +3975,17 @@ def test_definition(monkeypatch, mocker, capsys, tmpdir, artefacts, args, filena
         (
             [
                 "--device",
+                "qemu-x86_64",
+                "--kernel",
+                "https://example.com/bzImage",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+            ],
+            "argument --bios/--uboot is only valid for qemu-riscv32, qemu-riscv64 and qemu-arm64 device",
+        ),
+        (
+            [
+                "--device",
                 "fastboot-dragonboard-410c",
                 "--kernel",
                 "https://example.com/Image.gz",

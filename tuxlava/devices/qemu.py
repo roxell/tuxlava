@@ -77,7 +77,7 @@ class QemuDevice(Device):
 
         if bios and self.name not in ["qemu-riscv32", "qemu-riscv64", "qemu-arm64"]:
             raise InvalidArgument(
-                "argument --bios is only valid for qemu-riscv32, qemu-riscv64 and qemu-arm64 device"
+                "argument --bios/--uboot is only valid for qemu-riscv32, qemu-riscv64 and qemu-arm64 device"
             )
         if boot_args and '"' in boot_args:
             raise InvalidArgument('argument --boot-args should not contains "')
