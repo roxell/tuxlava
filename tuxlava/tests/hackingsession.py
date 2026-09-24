@@ -23,6 +23,7 @@ class HackingSession(Test):
     name = "hacking-session"
     timeout = 20
     need_test_definition = True
+    needs_network = True
 
     def render(self, **kwargs):
         kwargs["name"] = self.name

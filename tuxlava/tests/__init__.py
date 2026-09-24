@@ -40,6 +40,7 @@ class Test:
     name: str = ""
     timeout: int = 0
     need_test_definition: bool = False
+    needs_network: bool = False
 
     def __init__(self, timeout):
         if timeout:

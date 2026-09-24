@@ -293,12 +293,13 @@ class Job:
             self.commands = " ".join([shlex.quote(s) for s in self.commands])
 
         if "hacking-session" in self.tests:
-            self.enable_network = True
             if not self.parameters.get("PUB_KEY"):
                 raise MissingArgument("argument missing --parameters PUB_KEY='...'")
 
         self.device = Device.select(self.device)()
         self.tests = [Test.select(t)(self.timeouts.get(t)) for t in self.tests]
+        if any(t.needs_network for t in self.tests):
+            self.enable_network = True
         self.device.validate(**filter_options(self))
         # Which artefacts came from the command line. This must be before
         # device.default(), it fills in the rest. A secret without an

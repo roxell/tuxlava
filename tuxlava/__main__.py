@@ -33,7 +33,6 @@ def main() -> int:
             parser.error("argument --device is required")
 
     if "hacking-session" in options.tests:
-        options.enable_network = True
         if not options.parameters.get("PUB_KEY"):
             parser.error("argument missing --parameters PUB_KEY='...'")
 
