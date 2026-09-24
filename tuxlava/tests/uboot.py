@@ -40,3 +40,18 @@ class UBootUT(Test):
             suites=self.suites(parameters),
             **kwargs,
         )
+
+
+class UBootEFISelftest(Test):
+    devices = ["qemu-arm64"]
+    name = "uboot-efi-selftest"
+    timeout = 10
+    needs_os = False
+    qemu_options = ["-device virtio-rng-pci"]
+    needs_network = True
+
+    def render(self, **kwargs):
+        kwargs["name"] = self.name
+        kwargs["timeout"] = self.timeout
+
+        return self._render("uboot-efi-selftest.yaml.jinja2", **kwargs)

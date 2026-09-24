@@ -1,0 +1,82 @@
+device_type: "qemu"
+
+job_name: "tuxlava@qemu-arm64: uboot-efi-selftest"
+priority: low
+visibility: "public"
+
+context:
+    arch: "arm64"
+    machine: "virt,virtualization=on,gic-version=3,mte=on"
+    cpu: "max,pauth-impdef=on"
+    memory: "4G"
+    extra_options: ["-no-reboot", "-smp 2", "-device virtio-rng-pci"]
+    no_kvm: true
+    no_network: false
+timeouts:
+  job:
+    minutes: 40
+  action:
+   minutes: 5
+  actions:
+    power-off:
+      seconds: 30
+
+actions:
+- deploy:
+    to: tmpfs
+    timeout:
+      minutes: 15
+    os: oe
+    images:
+      bios:
+        image_arg: "-bios {bios}"
+        url: "https://example.com/u-boot.bin"
+- boot:
+    method: qemu
+    timeout:
+      minutes: 15
+- test:
+    timeout:
+      minutes: 10
+    interactive:
+    - name: uboot-prompt
+      prompts: ["Hit any key to stop autoboot", "=> "]
+      script:
+      - command: null
+    - name: uboot-stop-autoboot
+      prompts: ["=> "]
+      script:
+      - command: ""
+    - name: uboot-efi-selftest-start
+      prompts: ["=> "]
+      script:
+      - command: "bootefi selftest"
+        successes:
+        - message: "Testing EFI API implementation"
+        wait_for_prompt: false
+- test:
+    timeout:
+      minutes: 10
+    monitors:
+    - name: uboot-efi-selftest
+      start: "Number of tests to execute"
+      end: "Summary: "
+      pattern: "Result: (?P<result>PASS|SKIP|FAIL): (?P<test_case_id>[^\\r\\n]+)[\\r\\n]"
+      fixupdict:
+        PASS: pass
+        SKIP: skip
+        FAIL: fail
+- test:
+    timeout:
+      minutes: 10
+    interactive:
+    - name: uboot-efi-selftest
+      prompts: ["=> "]
+      script:
+      - command: null
+        name: summary
+        successes:
+        - message: "\\b0 failures"
+        failures:
+        - message: "[1-9]\\d* failures"
+        wait_for_prompt: false

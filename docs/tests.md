@@ -187,6 +187,7 @@ qemu-\* | perf                                                                  
 qemu-\* | rcutorture                                                                 |                                                          |
 qemu-\* | systemd-analyze                                                            |                                                          |
 qemu-arm64 | tfa-tests                                                               |                                                          |
+qemu-arm64 | uboot-efi-selftest                                                      |                                                          |
 qemu-arm64 | uboot-ut                                                                | UT_SUITES                                                |
 qemu-\* | v4l2                                                                       |                                                          |
 
@@ -230,16 +231,18 @@ qemu-\* | xfstests-(btrfs, ext4, f2fs, Nilfs2, xfs)                             
     Kselftest-arm64 are tests that can run on a qemu-arm64 machine.
 
 > Info: "u-boot tests"
-    `uboot-ut` boots only u-boot on qemu-arm64, no kernel or rootfs.
-    Give the u-boot binary with `--uboot`:
+    `uboot-ut` and `uboot-efi-selftest` boot only u-boot on qemu-arm64,
+    no kernel or rootfs. Give the u-boot binary with `--uboot`:
     ```shell
     tuxlava --device qemu-arm64 --uboot https://.../u-boot.bin --tests uboot-ut
     ```
     `uboot-ut` runs `ut`. `UT_SUITES` is a space separated list of
-    suites, `all` by default.
+    suites, `all` by default. `uboot-efi-selftest` runs
+    `bootefi selftest`.
 
     Each test gets its own result when u-boot prints a `Result:` line
-    per test. An older u-boot gets one result per `ut` suite.
+    per test. An older u-boot gets one result per `ut` suite, or one
+    `summary` result for the EFI selftest.
 
 > Warning: "KUnit config"
     In order to run KUnit tests, the kernel should be compiled with

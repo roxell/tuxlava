@@ -41,6 +41,7 @@ class Test:
     timeout: int = 0
     need_test_definition: bool = False
     needs_os: bool = True
+    qemu_options: List[str] = []
     needs_network: bool = False
 
     def __init__(self, timeout):

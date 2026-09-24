@@ -1,0 +1,37 @@
+- test:
+    timeout:
+      minutes: {{ timeout }}
+    interactive:
+{% include "uboot-prompt.yaml.jinja2" %}
+
+    - name: {{ name }}-start
+      prompts: ["=> "]
+      script:
+      - command: "bootefi selftest"
+        successes:
+        - message: "Testing EFI API implementation"
+        wait_for_prompt: false
+- test:
+    timeout:
+      minutes: {{ timeout }}
+    monitors:
+    - name: {{ name }}
+      start: "Number of tests to execute"
+      end: "Summary: "
+{% include "uboot-results.yaml.jinja2" %}
+
+- test:
+    timeout:
+      minutes: {{ timeout }}
+    interactive:
+    - name: {{ name }}
+      prompts: ["=> "]
+      script:
+      - command: null
+        name: summary
+        successes:
+        - message: "\\b0 failures"
+        failures:
+        - message: "[1-9]\\d* failures"
+        wait_for_prompt: false
+

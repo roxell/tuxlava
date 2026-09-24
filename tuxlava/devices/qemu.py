@@ -137,6 +137,8 @@ class QemuDevice(Device):
         kwargs["no_kvm"] = not kwargs["enable_kvm"]
         kwargs["no_network"] = not kwargs["enable_network"]
         kwargs["boot_os"] = boots_os(kwargs["tests"])
+        for t in kwargs["tests"]:
+            kwargs["extra_options"].extend(t.qemu_options)
 
         # Options that can be updated
         if self.extra_boot_args:

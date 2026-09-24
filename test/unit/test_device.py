@@ -2798,6 +2798,17 @@ def artefacts(tmp_path):
         (
             [
                 "--device",
+                "qemu-arm64",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+                "--tests",
+                "uboot-efi-selftest",
+            ],
+            "qemu-arm64-uboot-efi-selftest.yaml",
+        ),
+        (
+            [
+                "--device",
                 "nfs-altra-max-ac02",
                 "--kernel",
                 "https://example.com/Image.gz",
@@ -4014,6 +4025,18 @@ def test_definition(monkeypatch, mocker, capsys, tmpdir, artefacts, args, filena
                 "--tests",
                 "uboot-ut",
                 "ltp-smoke",
+            ],
+            "a u-boot test must run alone",
+        ),
+        (
+            [
+                "--device",
+                "qemu-arm64",
+                "--uboot",
+                "https://example.com/u-boot.bin",
+                "--tests",
+                "uboot-ut",
+                "uboot-efi-selftest",
             ],
             "a u-boot test must run alone",
         ),
